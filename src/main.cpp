@@ -1,63 +1,34 @@
 #include <Arduino.h>
+#include "sequence.h"
 
-const int INC    = 18;
-const int UD     = 17;
-const int CS     = 16;
-const int BUTTON = 20;
-
-const int ENTER = 14;
-const int LEFT  = 21;
-const int RIGHT = 27;
-const int UP    = 25;
-const int DOWN  = 99; // DOWN is not supported because potentiometer cannot produce 0kOm
+const int INC_PIN    = 18;
+const int UD_PIN     = 17;
+const int CS_PIN     = 16;
+const int BUTTON_PIN = 20;
 
 int g_currentPosition = 0;
 bool g_buttonWasDown = false;
 
-int sequenceMista1800[] =
-{
-    ENTER,
-    UP,UP,UP,
-    ENTER,ENTER,
-    LEFT,LEFT,LEFT,LEFT,LEFT,LEFT,LEFT,LEFT,
-    UP,UP,UP,
-    RIGHT,
-    UP,UP,
-    ENTER,
-    UP,UP,UP,UP,UP,UP,
-    ENTER,
-    UP,UP,UP,UP,UP,
-    RIGHT,
-    UP,UP,UP,UP,UP,UP,
-    LEFT,LEFT,LEFT,LEFT,
-    UP,UP,UP,UP,UP,UP,
-    LEFT,
-    UP,UP,UP,UP,
-    ENTER,
-    UP,UP,UP,UP,UP,
-    ENTER
-};
-
 void pulseInc() 
 {
-    digitalWrite(INC, LOW);
+    digitalWrite(INC_PIN, LOW);
     delayMicroseconds(50);
-    digitalWrite(INC, HIGH);
+    digitalWrite(INC_PIN, HIGH);
     delayMicroseconds(50);
 }
 
 void csExistWithoutEepromSaving()
 {
-    digitalWrite(INC, LOW);
+    digitalWrite(INC_PIN, LOW);
     delayMicroseconds(2);
-    digitalWrite(CS, HIGH);
-    digitalWrite(INC, HIGH);
+    digitalWrite(CS_PIN, HIGH);
+    digitalWrite(INC_PIN, HIGH);
 }
 
 void moveToZero() 
 {
-    digitalWrite(CS, LOW);
-    digitalWrite(UD, LOW);
+    digitalWrite(CS_PIN, LOW);
+    digitalWrite(UD_PIN, LOW);
     delayMicroseconds(2);
 
     for (int i = 0; i < 120; i++) {
@@ -85,10 +56,10 @@ void moveToTarget(int targetPosition)
       targetPosition = 99;
     }
 
-    digitalWrite(CS, LOW);
+    digitalWrite(CS_PIN, LOW);
     int increments = abs(targetPosition - g_currentPosition);
     int direction = (targetPosition > g_currentPosition) ? HIGH : LOW;
-    digitalWrite(UD, direction);
+    digitalWrite(UD_PIN, direction);
     Serial.printf("Current=%d Target=%d Steps=%d\n", g_currentPosition, targetPosition, increments);
     delayMicroseconds(2);
 
@@ -103,7 +74,7 @@ void moveToTarget(int targetPosition)
 
 bool isButtonPressed() 
 {
-    bool pressed = digitalRead(BUTTON) == LOW;
+    bool pressed = digitalRead(BUTTON_PIN) == LOW;
 
     if (pressed && !g_buttonWasDown) 
     {
@@ -197,14 +168,14 @@ void setupPins()
 {
     pinMode(LED_BUILTIN, OUTPUT);
 
-    digitalWrite(INC, HIGH);
-    digitalWrite(CS, HIGH);
-    digitalWrite(UD, LOW);
+    digitalWrite(INC_PIN, HIGH);
+    digitalWrite(CS_PIN, HIGH);
+    digitalWrite(UD_PIN, LOW);
     
-    pinMode(INC, OUTPUT);
-    pinMode(CS, OUTPUT);
-    pinMode(UD, OUTPUT);
-    pinMode(BUTTON, INPUT_PULLUP);
+    pinMode(INC_PIN, OUTPUT);
+    pinMode(CS_PIN, OUTPUT);
+    pinMode(UD_PIN, OUTPUT);
+    pinMode(BUTTON_PIN, INPUT_PULLUP);
 }
 
 void setupDefalts() 
